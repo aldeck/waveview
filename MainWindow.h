@@ -18,7 +18,7 @@ public:
 								~MainWindow();
 
 	virtual	bool				QuitRequested();
-	virtual	void				MessageReceived(BMessage *message);
+	//virtual	void				MessageReceived(BMessage *message);
 
 protected:
 			MainView*			fMainView;

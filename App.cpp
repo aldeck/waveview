@@ -36,9 +36,10 @@ void App::AboutRequested()
 }
 
 
-void App::MessageReceived(BMessage *message)
+/*void App::MessageReceived(BMessage *message)
 {
-}
+	BApplication::MessageReceived(message);
+}*/
 
 
 int

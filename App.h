@@ -20,7 +20,7 @@ public:
 								~App();
 
 	virtual	void				AboutRequested();
-	virtual void				MessageReceived(BMessage *message);
+	//virtual void				MessageReceived(BMessage *message);
 	
 protected:
 	BWindow*					fMainWindow;

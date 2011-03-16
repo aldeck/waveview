@@ -38,12 +38,12 @@ MainWindow::QuitRequested()
 }
 
 
-void
+/*void
 MainWindow::MessageReceived(BMessage *message)
 {
 	switch (message->what) {
 		default:
 			BWindow::MessageReceived(message);
 	}
-}
+}*/
 
