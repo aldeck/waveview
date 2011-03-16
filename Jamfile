@@ -1,0 +1,12 @@
+SubDir HAIKU_TOP src apps waveview ;
+
+UsePrivateHeaders shared ;
+
+Application WaveView :
+	App.cpp
+	MainWindow.cpp
+	MainView.cpp
+
+	: be $(TARGET_LIBSTDC++)
+	: WaveView.rdef
+;

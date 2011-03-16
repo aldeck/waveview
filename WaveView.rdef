@@ -1,0 +1,21 @@
+/*
+ * Copyright 2011, Haiku Inc. All rights reserved.
+ * Distributed under the terms of the MIT License.
+ *
+ * Authors:
+ * 		Alexandre Deckner <alex@zappotek.com>
+ */
+
+resource(1, "BEOS:APP_SIG") #'MIMS' "application/x-vnd.Haiku-WaveView";
+
+resource app_version {
+	major  = 1,
+	middle = 0,
+	minor  = 0,
+
+	variety = B_APPV_BETA,
+	internal = 0,
+
+	short_info = "WaveView",
+	long_info = "WaveView ©2011 Haiku, Inc."
+};
