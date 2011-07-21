@@ -5,7 +5,7 @@ NAME = WaveView
 SRCS = App.cpp
 SRCS += MainWindow.cpp
 SRCS += MainView.cpp
-LIBS = be media stdc++
+LIBS = be media tracker #stdc++
 
 RDEFS = WaveView.rdef
 

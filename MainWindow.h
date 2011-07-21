@@ -10,6 +10,7 @@
 #include <Window.h>
 
 
+class BFilePanel;
 class MainView;
 
 
@@ -19,10 +20,14 @@ public:
 								~MainWindow();
 
 	virtual	bool				QuitRequested();
-	//virtual	void				MessageReceived(BMessage *message);
+	virtual	void				MessageReceived(BMessage* message);
 
-protected:
+private:
+			void				_MessageDropped(BMessage* message);
+
+private:
 			MainView*			fMainView;
+			BFilePanel*			fOpenPanel;
 };
 
 

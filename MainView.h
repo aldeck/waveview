@@ -7,6 +7,7 @@
 #define _MAINVIEW_H
 
 
+#include <Entry.h>
 #include <View.h>
 #include <Rect.h>
 
@@ -32,8 +33,14 @@ public:
 	virtual void	FrameResized(float width, float height);
 	virtual void	KeyDown(const char *bytes, int32 numBytes);
 
-	void			_LoadWave();
+	status_t		LoadWave(const entry_ref& ref);
+
+private:
 	void			_ProcessAudio(char* buffer, media_format* format, int64 frameCount);
+	status_t		_ReloadWave();
+
+private:
+	entry_ref		fCurrentEntryRef;
 	float*			fWave;
 	uint32			fDestCursor;
 	uint32			fSourceCursor;

@@ -42,7 +42,6 @@ void
 MainView::AttachedToWindow()
 {
 	BView::AttachedToWindow();
-	_LoadWave();
 	MakeFocus();
 }
 
@@ -83,8 +82,16 @@ MainView::FrameResized(float width, float height)
 }
 
 
-void
-MainView::_LoadWave() {
+status_t
+MainView::_ReloadWave()
+{
+	return LoadWave(fCurrentEntryRef);
+}
+
+
+status_t
+MainView::LoadWave(const entry_ref& ref)
+{
 	bigtime_t startLoadWave = system_time();
 
 	fDestCursor = 0;
@@ -95,21 +102,21 @@ MainView::_LoadWave() {
 	fDownsampleCount = 0;
 
 	// instantiate a BMediaFile object, and make sure there was no error.
-	BEntry entry("./song.wav");
+	/*BEntry entry("./song.wav");
 	entry_ref ref;
-	entry.GetRef(&ref);
-	BMediaFile *mediaFile = new BMediaFile(&ref);
+	entry.GetRef(&ref);*/
+	BMediaFile* mediaFile = new BMediaFile(&ref);
 	status_t err = mediaFile->InitCheck();
 	if (err != B_OK) {
 		printf("cannot contruct BMediaFile object -- %s\n", strerror(err));
-		return;
+		return err;
 	}
 
 	for (int32 i = 0; i < mediaFile->CountTracks(); i++) {
-		BMediaTrack *track = mediaFile->TrackAt(i);
+		BMediaTrack* track = mediaFile->TrackAt(i);
 		if (track == NULL) {
 			printf("cannot contruct BMediaTrack object\n");
-			return;
+			return B_ERROR;
 		}
 
 		media_format format;
@@ -118,7 +125,7 @@ MainView::_LoadWave() {
 		err = track->DecodedFormat(&format);
 		if (err != B_OK) {
 			printf("BMediaTrack::DecodedFormat error -- %s\n", strerror(err));
-			return;
+			return err;
 		}
 
 		if (format.type == B_MEDIA_RAW_AUDIO) {
@@ -127,9 +134,9 @@ MainView::_LoadWave() {
 			bigtime_t start = system_time();
 			int64 actualSeekFrame = fSourceWindow.left;
 			err = track->SeekToFrame(&actualSeekFrame);
-			if (err) {
+			if (err != B_OK) {
 				printf("BMediaTrack::SeekToFrame(%lli) error -- %s\n", fSourceWindow.left, strerror(err));
-				return;
+				return err;
 			}
 			printf("BMediaTrack::SeekToFrame(%lli) seekedto=%lli in %llims\n", fSourceWindow.left, actualSeekFrame, (system_time() - start) / 1000);
 			fSourceWindow.left = actualSeekFrame;
@@ -145,7 +152,12 @@ MainView::_LoadWave() {
 			delete [] fWave;
 			fWave = NULL;
 			fWave = new(std::nothrow) float[fSourceWindow.Width() / fDownsamplingWidth]; // ATT: on en prend plus que la largeur de dest car downsampling width entier
-			char *buffer = new(std::nothrow) char[format.u.raw_audio.buffer_size];
+			if (fWave == NULL)
+				return B_NO_MEMORY;
+
+			char* buffer = new(std::nothrow) char[format.u.raw_audio.buffer_size];
+			if (buffer == NULL)
+				return B_NO_MEMORY;
 
 			int64 readFrameCount = 0;
 			media_header mediaHeader;
@@ -157,6 +169,7 @@ MainView::_LoadWave() {
 					printf("BMediaTrack::ReadFrames error -- %s\n", strerror(err));
 					delete [] buffer;
 					break;
+					// TODO fatal error?
 				}
 
 				if (fSourceCursor + readFrameCount >= fSourceWindow.right) {
@@ -178,6 +191,8 @@ MainView::_LoadWave() {
 
 
 	printf("LoadWave in %lims\n", (system_time() - startLoadWave) / 1000 );
+	fCurrentEntryRef = ref;
+	return B_OK;
 }
 
 
@@ -232,25 +247,25 @@ void MainView::KeyDown(const char *bytes, int32 numBytes)
       case B_UP_ARROW:
          fSourceWindow.left += width / 10;
          fSourceWindow.right -= width / 10;
-         _LoadWave();
+         _ReloadWave();
          Invalidate();
          break;
        case B_DOWN_ARROW:
          fSourceWindow.left -= width / 10;
          fSourceWindow.right += width / 10;
-         _LoadWave();
+         _ReloadWave();
          Invalidate();
          break;
       case B_RIGHT_ARROW:
          fSourceWindow.left += width / 10;
          fSourceWindow.right += width / 10;
-         _LoadWave();
+         _ReloadWave();
          Invalidate();
          break;
       case B_LEFT_ARROW:
       	 fSourceWindow.left -= width / 10;
          fSourceWindow.right -= width / 10;
-         _LoadWave();
+         _ReloadWave();
          Invalidate();
          break;
       default:
