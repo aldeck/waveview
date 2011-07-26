@@ -52,6 +52,8 @@ MainView::Draw(BRect updateRect)
 	if (fWave == NULL || fDestCursor == 0)
 		return;
 
+	SetDrawingMode(B_OP_COPY);
+	SetHighColor(0, 0, 0);
 	float x = 0.0f;
 	float ycenter = fWaveFrame.Height() / 2.0f;
 	float yscale = fWaveFrame.Height() / 2.0f;
@@ -73,6 +75,18 @@ MainView::Draw(BRect updateRect)
 		}
 	}
 
+	SetDrawingMode(B_OP_ADD);
+	float max = Bounds().Height() / 5.0f; // temp hardcoded
+	float center = Bounds().Height() / 2.0f;
+	float width = Bounds().Width();
+	float startBrightness = 200.0f;
+	float brightnessDelta = -120.0f;
+	for (int32 i = 0; i < (int32)max; i++) {
+		int32 brightness = (int32)(startBrightness + brightnessDelta * (float)i / max);
+		SetHighColor(brightness, brightness, brightness);
+		StrokeLine(BPoint(0, center - i), BPoint(width, center - i));
+		StrokeLine(BPoint(0, center + i + 1 ), BPoint(width, center + i + 1));
+	}
 }
 
 
